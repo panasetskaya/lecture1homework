@@ -3,6 +3,7 @@ package com.example.lecture1homework
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,10 +32,36 @@ class MainActivity : AppCompatActivity() {
         Log.i("MyResult", "${user1.name}'s startTime: ${user1.startTime}")
         Thread.sleep(1000)
         Log.i("MyResult", "${user1.name}'s startTime: ${user1.startTime}")
+        val userList = mutableListOf(User(2,"John", 19, Type.FULL))
+        userList?.apply {
+            addAll(listOf(
+                User(3, "Mary", 30, Type.FULL),
+                User(4, "Sally", 54, Type.FULL),
+                User(5, "Bob", 18, Type.DEMO)))
+        }
+        val fullTypeUserList = mutableListOf<User>()
+        val userNames = mutableListOf<String>()
+        for (user in userList) {
+            if (user.type == Type.FULL) {
+                fullTypeUserList.add(user)
+                userNames.add(user.name)
+            }
+        }
+        Log.i("MyResult", "First and last users (FULL type): ${userNames[0]} and ${userNames[userNames.size-1]}")
+        userList[0].checkIfAdult()
     }
 
 
     fun buy(publication: Publication) {
         Log.i("MyResult","The purchase is complete. The purchase amount was ${publication.price}€")
+    }
+
+    fun User.checkIfAdult() {
+        if (age>=18) {
+            Log.i("MyResult","$name is adult")}
+        else
+            throw Exception("Bad exception: the user is underage")
+
+
     }
 }
