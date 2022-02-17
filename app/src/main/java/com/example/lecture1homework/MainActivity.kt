@@ -31,12 +31,12 @@ class MainActivity : AppCompatActivity() {
         val user1 = User(22,"Jack", 35, Type.DEMO )
         Log.i("MyResult", "${user1.name}'s startTime: ${user1.startTime}")
         Thread.sleep(1000)
-        Log.i("MyResult", "${user1.name}'s startTime: ${user1.startTime}")
+        Log.i("MyResult", "${user1.name}'s startTime still: ${user1.startTime}")
         val userList = mutableListOf(User(2,"John", 19, Type.FULL))
         userList?.apply {
             addAll(listOf(
                 User(3, "Mary", 30, Type.FULL),
-                User(4, "Sally", 54, Type.FULL),
+                User(4, "Sally", 25, Type.FULL),
                 User(5, "Bob", 18, Type.DEMO)))
         }
         val fullTypeUserList = mutableListOf<User>()
@@ -48,7 +48,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
         Log.i("MyResult", "First and last users (FULL type): ${userNames[0]} and ${userNames[userNames.size-1]}")
-        userList[0].checkIfAdult()
+        val login = Action.Login(userList[2])
+        doAction(login)
     }
 
 
@@ -61,7 +62,34 @@ class MainActivity : AppCompatActivity() {
             Log.i("MyResult","$name is adult")}
         else
             throw Exception("Bad exception: the user is underage")
-
-
     }
-}
+
+    inline fun auth(updateCache: () -> Unit, user: User) {
+        val callBack = object: AuthCallBack {
+            override fun AuthSuccess() {
+                Log.i("MyResult","Authentication succeeded")}
+            override fun AuthFailure() {
+                Log.i("MyResult","Authentication failed")
+            }
+        }
+        try {
+            user.checkIfAdult()
+            updateCache()
+            callBack.AuthSuccess()
+        } catch (e: Exception) {
+            callBack.AuthFailure()
+        }
+    }
+
+    fun doAction(action: Action) {
+        when (action) {
+            is Action.Registration -> Log.i("MyRes", "Registration started")
+            is Action.Login -> {
+                val updateCache: () -> Unit = {Log.i("MyResult", "Authentication started")}
+                auth(updateCache, action.user)
+            }
+            is Action.Logout -> Log.i("MyRes", "Logout started")
+            }
+        }
+    }
+
